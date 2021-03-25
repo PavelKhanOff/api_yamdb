@@ -4,9 +4,6 @@ from django.contrib.auth.models import (PermissionsMixin,
                                         BaseUserManager)
 from datetime import datetime
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
 
 
 class UserAccountManager(BaseUserManager):
@@ -31,6 +28,7 @@ class UserAccountManager(BaseUserManager):
     def get_by_natural_key(self, username_):
         print(username_)
         return self.get(username=username_)
+
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
 
@@ -57,6 +55,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return str(self.username)
 
+
 class Genre(models.Model):
     name = models.CharField(
         verbose_name='Название',
@@ -66,11 +65,14 @@ class Genre(models.Model):
         verbose_name='URL slug',
         unique=True,
     )
+
     class Meta:
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
+
     def __str__(self):
         return self.name
+
 
 class Category(models.Model):
     name = models.CharField(
@@ -81,9 +83,11 @@ class Category(models.Model):
         verbose_name='URL slug',
         unique=True,
     )
+
     class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
+
     def __str__(self):
         return self.name
 
@@ -121,17 +125,17 @@ class Title(models.Model):
 
 class Review(models.Model):
     author = models.ForeignKey(
-        User,
+        CustomUser,
         on_delete=models.CASCADE,
         related_name='reviewer'
     )
-    title= models.ForeignKey(
+    title = models.ForeignKey(
         Title, on_delete=models.CASCADE, related_name='review'
     )
     text = models.TextField()
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
     score = models.PositiveIntegerField(
-        "Оценка", 
+        "Оценка",
         null=False,
         validators=[
             MinValueValidator(1, "Не меньше 1"),
@@ -144,11 +148,11 @@ class Review(models.Model):
 
 
 class Comment(models.Model):
-    title= models.ForeignKey(
+    title = models.ForeignKey(
         Title, on_delete=models.CASCADE, related_name='comments'
     )
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='comments'
+        CustomUser, on_delete=models.CASCADE, related_name='comments'
     )
     review = models.ForeignKey(
         Review, on_delete=models.CASCADE, related_name='comments'

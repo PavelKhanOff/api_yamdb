@@ -1,16 +1,23 @@
 from django.shortcuts import render
 from django.core.mail import send_mail
-from .models import CustomUser
+from .models import CustomUser, Title, Review, Comment
 import jwt
 from rest_framework_simplejwt.views import TokenViewBase
-from rest_framework import filters, mixins, viewsets
+from rest_framework import filters, mixins, viewsets, serializers, status
+from django.shortcuts import get_object_or_404
+
 
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth.tokens import default_token_generator
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import UserEmailSerializer, ConfirmationCodeSerializer
+from .serializers import (
+    UserEmailSerializer,
+    ConfirmationCodeSerializer,
+    ReviewSerializer,
+    CommentSerializer
+)
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import (
     AllowAny,
@@ -57,3 +64,41 @@ def SendToken(request):
         refresh = RefreshToken.for_user(user)
         return HttpResponse(f'Ваш токен:{refresh.access_token}')
     return HttpResponse('Неправильный confirmation_code')
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    serializer_class = ReviewSerializer
+    permission_classes = [
+        IsAuthenticatedOrReadOnly,
+    ]
+
+    def get_queryset(self):
+        title = get_object_or_404(Title, id=self.kwargs.get("title_id"))
+        reviews = Review.objects.filter(title=title)
+        return reviews
+
+    def perform_create(self, serializer):
+        title = get_object_or_404(Title, id=self.kwargs.get("title_id"))
+
+        reviews = self.request.user.reviews
+        if reviews.filter(title=title).exists():
+            raise serializers.ValidationError(
+                detail="Вы уже делали ревью на это произведение!",
+                code=status.HTTP_400_BAD_REQUEST
+            )
+
+        serializer.save(author=self.request.user, title=title)
+
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticated, IsAuthenticatedOrReadOnly]
+
+    def perform_create(self, serializer):
+        review = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
+        serializer.save(author=self.request.user, review=review)
+
+    def get_queryset(self):
+        review = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
+        return Comment.objects.filter(review=review)

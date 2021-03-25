@@ -4,9 +4,6 @@ from django.contrib.auth.models import (PermissionsMixin,
                                         BaseUserManager)
 from datetime import datetime
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
 
 
 class UserAccountManager(BaseUserManager):
@@ -121,7 +118,7 @@ class Title(models.Model):
 
 class Review(models.Model):
     author = models.ForeignKey(
-        User,
+        CustomUser,
         on_delete=models.CASCADE,
         related_name='reviewer'
     )
@@ -148,7 +145,7 @@ class Comment(models.Model):
         Title, on_delete=models.CASCADE, related_name='comments'
     )
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='comments'
+        CustomUser, on_delete=models.CASCADE, related_name='comments'
     )
     review = models.ForeignKey(
         Review, on_delete=models.CASCADE, related_name='comments'

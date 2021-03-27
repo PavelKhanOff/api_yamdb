@@ -24,6 +24,7 @@ from .serializers import (CategorySerializer, CommentSerializer,
                           UserSerializer)
 
 
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def get_confirmation_code(request):
@@ -65,7 +66,7 @@ def get_jwt_token(request):
         return HttpResponse(f'Ваш токен:{refresh.access_token}')
     return HttpResponse('Неправильный confirmation_code')
 
-
+  
 class UserViewSet(viewsets.ModelViewSet):
     """API для модели пользователя"""
     queryset = CustomUser.objects.all()

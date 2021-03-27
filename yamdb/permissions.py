@@ -27,9 +27,10 @@ class ReviewCommentPermissions(permissions.BasePermission):
             return not request.user.is_anonymous()
 
         if request.method in ('PATCH', 'DELETE'):
-            return (request.user == obj.author
+                return (request.user == obj.author
                     or request.user.role == UserRole.ADMIN
                     or request.user.role == UserRole.MODERATOR)
+
 
         if request.method in permissions.SAFE_METHODS:
             return True

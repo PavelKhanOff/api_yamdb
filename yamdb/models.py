@@ -6,6 +6,7 @@ from django.contrib.auth.models import (PermissionsMixin,
 from datetime import datetime
 from django.core.validators import MaxValueValidator, MinValueValidator
 
+
 class UserRole(models.TextChoices):
     """Роли пользователей"""
     USER = 'user'
@@ -17,11 +18,14 @@ class CustomUser(AbstractUser):
     """Расширение стандартной модели пользователя Django"""
     bio = models.TextField(blank=True)
     email = models.EmailField(unique=True)
+
+
     role = models.CharField(
         max_length=255,
         choices=UserRole.choices,
         default=UserRole.USER
         )
+
 
 
 class Genre(models.Model):
@@ -33,11 +37,14 @@ class Genre(models.Model):
         verbose_name='URL slug',
         unique=True,
     )
+
     class Meta:
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
+
     def __str__(self):
         return self.name
+
 
 class Category(models.Model):
     name = models.CharField(
@@ -48,9 +55,11 @@ class Category(models.Model):
         verbose_name='URL slug',
         unique=True,
     )
+
     class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
+
     def __str__(self):
         return self.name
 
@@ -73,7 +82,7 @@ class Title(models.Model):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        related_name='catigories',
+        related_name='categories',
     )
     description = models.TextField(
         verbose_name='Описание',
@@ -92,13 +101,13 @@ class Review(models.Model):
         on_delete=models.CASCADE,
         related_name='reviewer'
     )
-    title= models.ForeignKey(
+    title = models.ForeignKey(
         Title, on_delete=models.CASCADE, related_name='review'
     )
     text = models.TextField()
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
     score = models.PositiveIntegerField(
-        "Оценка", 
+        "Оценка",
         null=False,
         validators=[
             MinValueValidator(1, "Не меньше 1"),
@@ -111,7 +120,7 @@ class Review(models.Model):
 
 
 class Comment(models.Model):
-    title= models.ForeignKey(
+    title = models.ForeignKey(
         Title, on_delete=models.CASCADE, related_name='comments'
     )
     author = models.ForeignKey(

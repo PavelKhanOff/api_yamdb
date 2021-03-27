@@ -1,13 +1,8 @@
 from rest_framework import serializers
-from .models import (
-  CustomUser, Review,
-  Comment, Category,
-  Genre, Title
-)
-from rest_framework_simplejwt.views import (TokenObtainPairView,
-                                            TokenRefreshView)
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.serializers import TokenObtainSerializer
+
+
+from .models import CustomUser, Category, Genre, Title, Review, Comment
+
 
 
 class UserEmailSerializer(serializers.Serializer):
@@ -18,6 +13,21 @@ class ConfirmationCodeSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
     confirmation_code = serializers.CharField(required=True)
 
+
+
+class UserSerializer(serializers.ModelSerializer):
+    """Сериализатор модели пользователя"""
+    class Meta:
+        model = CustomUser
+        fields = (
+            'id',
+            'username',
+            'role',
+            'email',
+            'first_name',
+            'last_name',
+            'bio'
+            )
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -84,3 +94,4 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = ("id", "text", "author", "score", "pub_date",)
         read_only_fields = ("id", "author", "pub_date")
         model = Review
+

@@ -3,7 +3,6 @@ from django_filters import filters
 from .models import Title
 
 
-
 class TitleFilter(filters.FilterSet):
     name = filters.CharFilter(
         field_name='name',

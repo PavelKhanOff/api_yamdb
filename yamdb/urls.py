@@ -1,11 +1,22 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
-from rest_framework_simplejwt.views import (TokenObtainPairView,
-                                            TokenRefreshView)
-from rest_framework_simplejwt.serializers import TokenObtainSerializer
-from .views import SendMessage, SendToken
+
+from .views import (
+    get_confirmation_code,
+    get_jwt_token,
+    UserViewSet,
+)
+
+v1_router = DefaultRouter()
+v1_router.register('users', UserViewSet)
+
+
+v1_auth_patterns = [
+    path('mail/', get_confirmation_code),
+    path('token/', get_jwt_token)
+]
 
 urlpatterns = [
-    path('v1/auth/email/', SendMessage, name='message_sending_view'),
-    path('v1/auth/token/', SendToken, name='token_obtain_pair'),
-      ]
+    path('', include(v1_router.urls)),
+    path('auth/', include(v1_auth_patterns))
+]

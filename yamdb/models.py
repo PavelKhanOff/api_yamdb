@@ -99,7 +99,7 @@ class Review(models.Model):
     author = models.ForeignKey(
         CustomUser,
         on_delete=models.CASCADE,
-        related_name='reviewer'
+        related_name='reviews'
     )
     title = models.ForeignKey(
         Title, on_delete=models.CASCADE, related_name='review'
@@ -121,7 +121,7 @@ class Review(models.Model):
 
 class Comment(models.Model):
     title = models.ForeignKey(
-        Title, on_delete=models.CASCADE, related_name='comments'
+        Title, on_delete=models.CASCADE, related_name='comments', null=True, blank=True
     )
     author = models.ForeignKey(
         CustomUser, on_delete=models.CASCADE, related_name='comments'

@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import (
     AllowAny,
     IsAuthenticated,
-    IsAuthenticatedOrReadOnly,
+    IsAuthenticatedOrReadOnly,)
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404, render
 from django_filters.rest_framework import DjangoFilterBackend
@@ -125,8 +125,10 @@ class CreateDestroyListRetrieveViewSet(mixins.CreateModelMixin,
 
 class TitleViewSet(ModelViewSet):
     queryset = Title.objects.all().annotate(rating=Avg('review__score'))
+    permission_classes = [IsAdminOrReadOnly]
     filterset_class = TitleFilter
     filter_backends = (DjangoFilterBackend,)
+    pagination_class = PageNumberPagination
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
@@ -136,25 +138,28 @@ class TitleViewSet(ModelViewSet):
 
 class GenreViewSet(CreateDestroyListRetrieveViewSet):
     queryset = Genre.objects.all()
+    permission_classes = [IsAdminOrReadOnly]
     lookup_field = 'slug'
     serializer_class = GenreSerializer
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
+    pagination_class = PageNumberPagination
 
 
 class CategoryViewSet(CreateDestroyListRetrieveViewSet):
     queryset = Category.objects.all()
     lookup_field = 'slug'
     serializer_class = CategorySerializer
+    permission_classes = [IsAdminOrReadOnly]
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
+    pagination_class = PageNumberPagination
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
-    permission_classes = [
-        IsAuthenticatedOrReadOnly,
-    ]
+    permission_classes = [ReviewCommentPermissions, IsAuthenticatedOrReadOnly]
+    pagination_class = PageNumberPagination
 
     def get_queryset(self):
         title = get_object_or_404(Title, id=self.kwargs.get("title_id"))
@@ -176,7 +181,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticated, IsAuthenticatedOrReadOnly]
+    permission_classes = [ReviewCommentPermissions, IsAuthenticatedOrReadOnly]
+    pagination_class = PageNumberPagination
 
     def perform_create(self, serializer):
         review = get_object_or_404(Review, pk=self.kwargs.get('review_id'))

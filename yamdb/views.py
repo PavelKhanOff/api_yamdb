@@ -1,53 +1,27 @@
-from django.core.mail import send_mail
-from .models import CustomUser
-from django.http import HttpResponse
 from django.contrib.auth.tokens import default_token_generator
-from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import UserEmailSerializer, ConfirmationCodeSerializer, UserSerializer
-from rest_framework.decorators import action, api_view, permission_classes
-from rest_framework import filters, status, viewsets
-from rest_framework.response import Response
-from rest_framework.permissions import (
-    AllowAny,
-    IsAuthenticated,
-    IsAuthenticatedOrReadOnly,)
+from django.core.mail import send_mail
 from django.db.models import Avg
-from django.shortcuts import get_object_or_404, render
-from django_filters.rest_framework import DjangoFilterBackend
-from django.core.mail import send_mail
-from .models import CustomUser, Title, Review, Comment, Category, Genre
-import jwt
-from rest_framework import filters, mixins, viewsets, serializers, status
-from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
-from django.contrib.auth.tokens import default_token_generator
+from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, mixins, serializers, status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import (AllowAny, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenViewBase
 
 from .filters import TitleFilter
-from .serializers import (
-  CategorySerializer, ConfirmationCodeSerializer,
-  GenreSerializer, TitleReadSerializer,
-  TitleWriteSerializer, UserEmailSerializer,
-  ReviewSerializer, CommentSerializer
-)
-from rest_framework import generics
-from .permissions import (
-    IsAdminOrReadOnly,
-    IsAdminOrSuperUser,
-    ReviewCommentPermissions
-)
-from django.contrib.auth import get_user_model
-from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import get_object_or_404
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import (IsAdminUser)
-
-
+from .models import Category, Comment, CustomUser, Genre, Review, Title
+from .permissions import (IsAdminOrReadOnly, IsAdminOrSuperUser,
+                          ReviewCommentPermissions)
+from .serializers import (CategorySerializer, CommentSerializer,
+                          ConfirmationCodeSerializer, GenreSerializer,
+                          ReviewSerializer, TitleReadSerializer,
+                          TitleWriteSerializer, UserEmailSerializer,
+                          UserSerializer)
 
 
 @api_view(['POST'])
@@ -92,7 +66,6 @@ def get_jwt_token(request):
     return HttpResponse('Неправильный confirmation_code')
 
 
-
 class UserViewSet(viewsets.ModelViewSet):
     """API для модели пользователя"""
     queryset = CustomUser.objects.all()
@@ -115,6 +88,7 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save(role=user.role, partial=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class CreateDestroyListRetrieveViewSet(mixins.CreateModelMixin,
                                        mixins.ListModelMixin,

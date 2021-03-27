@@ -1,10 +1,8 @@
-from django.db import models
-from django.contrib.auth.models import (PermissionsMixin,
-                                        AbstractBaseUser,
-                                        BaseUserManager,
-                                        AbstractUser)
 from datetime import datetime
+
+from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
 
 
 class UserRole(models.TextChoices):
@@ -18,14 +16,10 @@ class CustomUser(AbstractUser):
     """Расширение стандартной модели пользователя Django"""
     bio = models.TextField(blank=True)
     email = models.EmailField(unique=True)
-
-
     role = models.CharField(
         max_length=255,
         choices=UserRole.choices,
-        default=UserRole.USER
-        )
-
+        default=UserRole.USER)
 
 
 class Genre(models.Model):
@@ -121,7 +115,8 @@ class Review(models.Model):
 
 class Comment(models.Model):
     title = models.ForeignKey(
-        Title, on_delete=models.CASCADE, related_name='comments', null=True, blank=True
+        Title, on_delete=models.CASCADE,
+        related_name='comments', null=True, blank=True
     )
     author = models.ForeignKey(
         CustomUser, on_delete=models.CASCADE, related_name='comments'

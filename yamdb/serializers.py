@@ -73,6 +73,7 @@ class CommentSerializer(serializers.ModelSerializer):
         read_only_fields = ("id", "author", "pub_date",)
         model = Comment
 
+
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True,

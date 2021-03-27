@@ -110,7 +110,7 @@ class Title(models.Model):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        related_name='catigories',
+        related_name='categories',
     )
     description = models.TextField(
         verbose_name='Описание',

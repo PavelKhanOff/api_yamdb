@@ -11,6 +11,7 @@ from rest_framework.permissions import (
     AllowAny,
     IsAuthenticated,
     IsAuthenticatedOrReadOnly,
+)
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404, render
 from django_filters.rest_framework import DjangoFilterBackend
@@ -152,7 +153,7 @@ class CategoryViewSet(CreateDestroyListRetrieveViewSet):
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
-    permission_classes = [
+    permission_classes = [ReviewCommentPermissions,
         IsAuthenticatedOrReadOnly,
     ]
 
@@ -176,7 +177,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticated, IsAuthenticatedOrReadOnly]
+    permission_classes = [ReviewCommentPermissions, IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
         review = get_object_or_404(Review, pk=self.kwargs.get('review_id'))

@@ -3,7 +3,6 @@ from rest_framework import serializers
 from .models import Category, Comment, CustomUser, Genre, Review, Title
 
 
-
 class UserEmailSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
 

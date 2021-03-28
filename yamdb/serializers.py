@@ -45,8 +45,7 @@ class TitleReadSerializer(serializers.ModelSerializer):
     rating = serializers.FloatField()
 
     class Meta:
-        fields = ("id", "name", "year", "genre", "rating",
-                  "category", "description")
+        fields = '__all__'
         read_only_fields = ("id", "rating")
         model = Title
 
@@ -65,8 +64,7 @@ class TitleWriteSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        fields = ("id", "name", "year", "genre",
-                  "category", "description")
+        fields = '__all__'
         model = Title
 
 

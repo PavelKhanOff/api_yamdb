@@ -21,6 +21,10 @@ class CustomUser(AbstractUser):
         choices=UserRole.choices,
         default=UserRole.USER)
 
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
+
 
 class Genre(models.Model):
     name = models.CharField(

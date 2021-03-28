@@ -25,6 +25,6 @@ v1_auth_patterns = [
     path('token/', get_jwt_token)
 ]
 urlpatterns = [
-    path('', include(router.urls)),
-    path('auth/', include(v1_auth_patterns))
+    path('v1/', include(router.urls)),
+    path('v1/auth/', include(v1_auth_patterns))
 ]

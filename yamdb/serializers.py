@@ -1,4 +1,4 @@
-from rest_framework import serializers
+from rest_framework import serializers, exceptions
 
 from .models import Category, Comment, CustomUser, Genre, Review, Title
 
@@ -92,3 +92,12 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = ("id", "text", "author", "score", "pub_date",)
         read_only_fields = ("id", "author", "pub_date")
         model = Review
+
+    def validate(self, data):
+        if self.context['view'].action != "create":
+            return data
+        title_id = self.context['view'].kwargs.get("title_id")
+        user = self.context['request'].user
+        if Review.objects.filter(author=user, title_id=title_id).exists():
+            raise exceptions.ValidationError("Отзыв уже был оставлен.")
+        return data

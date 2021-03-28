@@ -1,6 +1,6 @@
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
-from django.db.models import Avg
+from django.db.models import Avg, query
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -137,19 +137,11 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         title = get_object_or_404(Title, id=self.kwargs.get("title_id"))
-        reviews = Review.objects.filter(title=title)
-        return reviews
+        queryset = title.review.all()
+        return queryset
 
     def perform_create(self, serializer):
         title = get_object_or_404(Title, id=self.kwargs.get("title_id"))
-
-        reviews = self.request.user.reviews
-        if reviews.filter(title=title).exists():
-            raise serializers.ValidationError(
-                detail="Вы уже делали ревью на это произведение!",
-                code=status.HTTP_400_BAD_REQUEST
-            )
-
         serializer.save(author=self.request.user, title=title)
 
 

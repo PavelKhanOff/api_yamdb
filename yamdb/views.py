@@ -41,10 +41,9 @@ def get_confirmation_code(request):
         fail_silently=False
     )
     if mail_status:
-        return HttpResponse(
-            'Код подтверждения был отправлен.',
-            status=status.HTTP_200_OK)
-    return HttpResponse('Ошибка при отправлении письма')
+        return HttpResponse('Код подтверждения был отправлен.')
+    return HttpResponse(
+        'Ошибка при отправлении письма', status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
@@ -61,7 +60,7 @@ def get_jwt_token(request):
         return HttpResponse(
             f'Ваш токен:{refresh.access_token}', status=status.HTTP_200_OK)
     return HttpResponse(
-        'Неправильный confirmation_code', status=status.HTTP_200_OK)
+        'Неправильный confirmation_code', status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -95,7 +94,7 @@ class CreateDestroyListRetrieveViewSet(mixins.CreateModelMixin,
 
 
 class TitleViewSet(ModelViewSet):
-    queryset = Title.objects.all().annotate(rating=Avg('review__score'))
+    queryset = Title.objects.all().annotate(rating=Avg('reviews__score'))
     permission_classes = [IsAdminOrReadOnly]
     filterset_class = TitleFilter
     filter_backends = (DjangoFilterBackend,)
@@ -130,7 +129,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         title = get_object_or_404(Title, id=self.kwargs.get("title_id"))
-        queryset = title.review.all()
+        queryset = title.reviews.all()
         return queryset
 
     def perform_create(self, serializer):

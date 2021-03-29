@@ -100,7 +100,7 @@ class Review(models.Model):
         related_name='reviews'
     )
     title = models.ForeignKey(
-        Title, on_delete=models.CASCADE, related_name='review'
+        Title, on_delete=models.CASCADE, related_name='reviews'
     )
     text = models.TextField()
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)

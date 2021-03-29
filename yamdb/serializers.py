@@ -1,4 +1,4 @@
-from rest_framework import serializers, exceptions
+from rest_framework import exceptions, serializers
 
 from .models import Category, Comment, CustomUser, Genre, Review, Title
 
@@ -13,7 +13,6 @@ class ConfirmationCodeSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    """Сериализатор модели пользователя"""
     class Meta:
         model = CustomUser
         fields = (

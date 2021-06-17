@@ -14,11 +14,28 @@
 - nginx - образ web сервера nginx
 #### Запуск проекта:
 - Установите Docker
-- Выполнить команду docker pull pavelkhan/api_yamdb_web:v1.16.06.2021
+```
+https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04-ru
+```
+- Выполнить команду: 
+```
+docker pull pavelkhan/api_yamdb_web:v1.16.06.2021
+```
 #### Первоначальная настройка Django:
+```
 - docker-compose exec web python manage.py migrate --noinput
 - docker-compose exec web python manage.py collectstatic --no-input
+```
 #### Загрузка тестовой фикстуры в базу:
+```
 docker-compose exec web python manage.py loaddata fixtures.json
+```
 #### Создание суперпользователя:
+```
 - docker-compose exec web python manage.py createsuperuser
+```
+#### Заполнение .env:
+Чтобы добавить переменную в .env необходимо открыть файл .env в корневой директории проекта и поместить туда переменную в формате имя_переменной=значение. Например "name=pavel".
+
+#### Автор:
+Автор Павел Хан. Задание было выполнено в рамках курса от Yandex Praktikum бэкенд разработчик.
